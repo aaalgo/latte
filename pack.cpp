@@ -62,10 +62,12 @@ int main (int argc, char *argv[]) {
     np::ndarray exprs = np::zeros(py::make_tuple(paths.size(), genes.size()), np::dtype::get_builtin<float>());
     np::ndarray ranks = np::zeros(py::make_tuple(paths.size(), genes.size()), np::dtype::get_builtin<uint16_t>());
 
+    ofstream index(output_prefix + ".idx");
     vector<pair<float, uint16_t>> pv(genes.size());
     for (unsigned i = 0; i < paths.size(); ++i) {
         float *expr = (float *)(exprs.get_data()) + i * Ref::GENES;
         uint16_t *rank = (uint16_t *)(ranks.get_data()) + i * Ref::GENES;
+        index << paths[i] << endl;
 
         ifstream is(paths[i]);
         string line, gene;
