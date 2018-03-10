@@ -69,21 +69,26 @@ int main (int argc, char *argv[]) {
         uint16_t *rank = (uint16_t *)(ranks.get_data()) + i * Ref::GENES;
         index << paths[i] << endl;
 
-        ifstream is(paths[i]);
-        string line, gene;
-        float value;
-        getline(is, line);
-        uint16_t j = 0;
-        while (is >> gene >> value) {
-            if (gene != genes[j]) throw 0;
-            expr[j] = value;
-            pv[j] = make_pair(value, j);
-            ++j;
+        try {
+            ifstream is(paths[i]);
+            string line, gene;
+            float value;
+            getline(is, line);
+            uint16_t j = 0;
+            while (is >> gene >> value) {
+                if (gene != genes[j]) throw 0;
+                expr[j] = value;
+                pv[j] = make_pair(value, j);
+                ++j;
+            }
+            if (j != genes.size()) throw 0;
+            sort(pv.begin(), pv.end());
+            for (unsigned j = 0; j < genes.size(); ++j) {
+                rank[pv[j].second] = j;
+            }
         }
-        if (j != genes.size()) throw 0;
-        sort(pv.begin(), pv.end());
-        for (unsigned j = 0; j < genes.size(); ++j) {
-            rank[pv[j].second] = j;
+        catch (...) {
+            cerr << "Failed to load " << paths[i] << endl;
         }
     }
     py::object np_save = py::import("numpy").attr("save");
