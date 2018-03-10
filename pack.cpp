@@ -31,6 +31,8 @@ int main (int argc, char *argv[]) {
         desc.add(desc_visible);
 
         po::positional_options_description p;
+        p.add("output", 1);
+
 
         po::variables_map vm;
         po::store(po::command_line_parser(argc, argv).
@@ -62,8 +64,8 @@ int main (int argc, char *argv[]) {
 
     vector<pair<float, uint16_t>> pv(genes.size());
     for (unsigned i = 0; i < paths.size(); ++i) {
-        float *expr = py::extract<float *>(exprs[i]);
-        uint16_t *rank = py::extract<uint16_t *>(ranks[i]);
+        float *expr = (float *)(exprs.get_data()) + i * Ref::GENES;
+        uint16_t *rank = (uint16_t *)(ranks.get_data()) + i * Ref::GENES;
 
         ifstream is(paths[i]);
         string line, gene;

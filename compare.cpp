@@ -44,12 +44,14 @@ void compare (np::ndarray v0, np::ndarray v1, vector<float> *ft) {
     size_t n0 = v0.shape(0);
     size_t n1 = v1.shape(0);
     size_t ns = n0 + n1;
+    cerr << n0 << '\t' << n1 << endl;
     if (v0.shape(1) != Ref::GENES) throw 0;
     if (v1.shape(1) != Ref::GENES) throw 0;
 
-    float const *p0 = py::extract<float const *>(v0);
-    float const *p1 = py::extract<float const *>(v1);
+    T const *p0 = (T const *)(v0.get_data());
+    T const *p1 = (T const *)(v1.get_data());
 
+    ft->resize(Ref::GENES);
     boost::progress_display progress(Ref::GENES, cerr);
 #pragma omp parallel
     {
@@ -107,6 +109,8 @@ int main (int argc, char *argv[]) {
             return 0;
         }
 	}
+    Py_Initialize();
+    np::initialize();
     Ref genes("data/ref");
     py::object np_load = py::import("numpy").attr("load");
     np::ndarray rank0 = np::array(np_load(input1_path));
